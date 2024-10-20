@@ -131,7 +131,7 @@ public:
                serverNames(vectorPairKeys(NTPSERVERS)) {}
 
     virtual tsl::elm::Element* createUI() override {
-        auto frame = new tsl::elm::CustomOverlayFrame("QuickNTP", "by NedEX - v1.2.8");
+        auto frame = new tsl::elm::CustomOverlayFrame("QuickNTP", "by NedEX - v1.2.8-1");
 
         auto list = new tsl::elm::List();
 
