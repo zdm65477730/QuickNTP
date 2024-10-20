@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.8-1] - 2024-10-20
+
+- libnx @ [v4.7.0](https://github.com/switchbrew/libnx/releases/tag/v4.7.0)
+
 ## [1.2.8] - 2023-04-03
 
 ### Updated
