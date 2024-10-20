@@ -83,6 +83,7 @@ Thanks to [@DarkMatterCore](https://github.com/DarkMatterCore)!
 
 - First release
 
+[1.2.8-1]: https://github.com/nedex/QuickNTP/compare/1.2.8...1.2.8-1
 [1.2.8]: https://github.com/nedex/QuickNTP/compare/1.2.7...1.2.8
 [1.2.7]: https://github.com/nedex/QuickNTP/compare/1.2.6...1.2.7
 [1.2.6]: https://github.com/nedex/QuickNTP/compare/1.2.5...1.2.6
