@@ -27,7 +27,9 @@ jobs:
     - name: Create release structure
       run: |
         mkdir -p release/switch/.overlays
+        mkdir -p release/config
         cp QuickNTP.ovl release/switch/.overlays/
+        cp quickntp.ini release/config/
 
     - name: Read app version from makefile
       run: |

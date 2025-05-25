@@ -1,14 +1,24 @@
+#ifndef APP_VERSION
+#define APP_VERSION "1.0.0"
+#endif
+
 #define TESLA_INIT_IMPL
+#include <minIni.h>
 #include <tesla.hpp>
 
 #include <string>
 #include <vector>
 
 #include "ntp-client.hpp"
-#include "servers.hpp"
 #include "tesla-ext.hpp"
 
 TimeServiceType __nx_time_service_type = TimeServiceType_System;
+
+const char* iniFile = "/config/quickntp.ini";
+const char* iniSection = "Servers";
+
+const char* defaultServerAddress = "pool.ntp.org";
+const char* defaultServerName = "NTP Pool Main";
 
 class NtpGui : public tsl::Gui {
 private:
@@ -42,8 +52,8 @@ private:
             } else {
                 Message = "Unable to set network clock.";
             }
-        } catch (NtpException& e) {
-            Message = "Error: " + e.what();
+        } catch (const NtpException& e) {
+            Message = "Error: " + std::string(e.what());
         }
 
         delete client;
@@ -87,8 +97,8 @@ private:
         try {
             time_t ntpTimeOffset = client->getTimeOffset(currentTime);
             Message = "Offset: " + std::to_string(ntpTimeOffset) + "s";
-        } catch (NtpException& e) {
-            Message = "Error: " + e.what();
+        } catch (const NtpException& e) {
+            Message = "Error: " + std::string(e.what());
         }
 
         delete client;
@@ -127,11 +137,28 @@ private:
     };
 
 public:
-    NtpGui() : serverAddresses(vectorPairValues(NTPSERVERS)),
-               serverNames(vectorPairKeys(NTPSERVERS)) {}
+    NtpGui() {
+        char key[INI_BUFFERSIZE];
+        char value[INI_BUFFERSIZE];
+
+        int idx = 0;
+        while (ini_getkey(iniSection, idx++, key, INI_BUFFERSIZE, iniFile) > 0) {
+            ini_gets(iniSection, key, "", value, INI_BUFFERSIZE, iniFile);
+            serverAddresses.push_back(value);
+
+            std::string keyStr = key;
+            std::replace(keyStr.begin(), keyStr.end(), '_', ' ');
+            serverNames.push_back(keyStr);
+        }
+
+        if (serverNames.empty() || serverAddresses.empty()) {
+            serverNames.push_back(defaultServerName);
+            serverAddresses.push_back(defaultServerAddress);
+        }
+    }
 
     virtual tsl::elm::Element* createUI() override {
-        auto frame = new tsl::elm::CustomOverlayFrame("QuickNTP", "by NedEX - v1.2.8-1");
+        auto frame = new tsl::elm::CustomOverlayFrame("QuickNTP", std::string("by NedEX - v") + APP_VERSION);
 
         auto list = new tsl::elm::List();
 
@@ -206,7 +233,7 @@ public:
         ASSERT_FATAL(socketInitializeDefault());
         ASSERT_FATAL(nifmInitialize(NifmServiceType_User));
         ASSERT_FATAL(timeInitialize());
-        ASSERT_FATAL(smInitialize());
+        ASSERT_FATAL(smInitialize()); // Needed
     }
 
     virtual void exitServices() override {

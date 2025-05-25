@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0] - 2025-05-25
+
+### Added
+
+- Customizable list of servers via ini file
+- Code cleanup (if you have suggestions, please let me know!)
+
+### Updated
+
+- libnx @ [v4.9.0](https://github.com/switchbrew/libnx/releases/tag/v4.9.0)
+- libtesla @ [f766e9b](https://github.com/WerWolv/libtesla/commit/f766e9b607a05e9756843cbd62b3bfb98be1646c)
+
 ## [1.2.8-1] - 2024-10-20
 
 - libnx @ [v4.7.0](https://github.com/switchbrew/libnx/releases/tag/v4.7.0)
@@ -83,6 +95,7 @@ Thanks to [@DarkMatterCore](https://github.com/DarkMatterCore)!
 
 - First release
 
+[1.5.0]: https://github.com/nedex/QuickNTP/compare/1.2.8...1.5.0
 [1.2.8]: https://github.com/nedex/QuickNTP/compare/1.2.7...1.2.8
 [1.2.7]: https://github.com/nedex/QuickNTP/compare/1.2.6...1.2.7
 [1.2.6]: https://github.com/nedex/QuickNTP/compare/1.2.5...1.2.6
