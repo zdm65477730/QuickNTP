@@ -22,12 +22,12 @@ With this [Tesla](https://github.com/WerWolv/libtesla) plugin, you can now quick
 
 ### Customize servers
 
-Modify the provided `quickntp.ini` file inside the `config` directory at the root, or create a new one with the following syntax:
+Since v1.5.0, you can create or modify the provided `quickntp.ini` file inside the `config` directory at the root, with the following syntax:
 
 ```ini
 # sd:/config/quickntp.ini
 [Servers]
-My_Ntp_Server=my-ntp.example.com
+My_Ntp_Server = ntp.example.com
 ```
 
 Underscores will be replaced by spaces in the UI!
@@ -49,6 +49,10 @@ Underscores will be replaced by spaces in the UI!
 - [@DraconicNEO](https://github.com/DraconicNEO) (new NTP servers)
 
 ## Credits
+
+### Special thanks
+
+- [The 4TU Team](https://github.com/fortheusers) for freely hosting this app on their [Homebrew App Store](https://hb-app.store/)
 
 ### Code and libraries
 

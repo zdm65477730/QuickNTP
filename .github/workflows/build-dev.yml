@@ -10,6 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: devkitpro/devkita64
+    env:
+      IS_DEV: true
 
     steps:
     - name: Show environment info
