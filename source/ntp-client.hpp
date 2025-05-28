@@ -11,8 +11,9 @@
 
 #define UNIX_OFFSET 2208988800L
 
+#define NTP_DEFAULT_SERVER "pool.ntp.org"
 #define NTP_DEFAULT_PORT "123"
-#define DEFAULT_TIMEOUT 3
+#define NTP_DEFAULT_TIMEOUT 3
 
 // Flags 00|100|011 for li=0, vn=4, mode=3
 #define NTP_FLAGS 0x23
@@ -36,88 +37,84 @@ typedef struct {
 
 } ntp_packet;
 
-struct NtpException : public std::exception {
-protected:
+class NtpException : public std::runtime_error {
+private:
     int m_code;
-    std::string m_message;
 
 public:
-    NtpException(int code, std::string message) {
-        m_code = code;
-        m_message = message;
-    }
+    NtpException(int code, const std::string& message)
+        : std::runtime_error(message), m_code(code) {}
 
-    std::string what() noexcept {
-        return m_message;
+    int code() const noexcept {
+        return m_code;
     }
 };
 
 class NTPClient {
 private:
-    int m_timeout;
-    const char* m_port;
     const char* m_server;
+    const char* m_port;
+    int m_timeout;
 
 public:
-    NTPClient(const char* server, const char* port, int timeout) {
-        m_server = server;
-        m_port = port;
-        m_timeout = timeout;
-    }
-
-    NTPClient(const char* server, const char* port) : NTPClient(server, port, DEFAULT_TIMEOUT) {}
-    NTPClient(const char* server) : NTPClient(server, NTP_DEFAULT_PORT, DEFAULT_TIMEOUT) {}
-    NTPClient() : NTPClient("pool.ntp.org", NTP_DEFAULT_PORT, DEFAULT_TIMEOUT) {}
-
-    void setTimeout(int timeout) {
-        m_timeout = timeout;
-    }
+    NTPClient(const char* server = NTP_DEFAULT_SERVER, const char* port = NTP_DEFAULT_PORT, int timeout = NTP_DEFAULT_TIMEOUT)
+        : m_server(server), m_port(port), m_timeout(timeout) {}
 
     time_t getTime() noexcept(false) {
-        int server_sock, status;
-        struct addrinfo hints, *servinfo, *ap;
-        socklen_t addrlen = sizeof(struct sockaddr_storage);
-        ntp_packet packet = {.flags = NTP_FLAGS};
-
+        int status;
+        struct addrinfo hints, *servinfo;
         hints = (struct addrinfo){.ai_family = AF_INET, .ai_socktype = SOCK_DGRAM};
 
         if ((status = getaddrinfo(m_server, m_port, &hints, &servinfo)) != 0) {
             throw NtpException(1, "Unable to get address info (" + std::string(gai_strerror(status)) + ")");
         }
 
-        for (ap = servinfo; ap != NULL; ap = ap->ai_next) {
+        struct addrinfo* ap;
+        int server_sock;
+        ntp_packet packet = {.flags = NTP_FLAGS};
+        bool time_retrieved = false;
+
+        for (ap = servinfo; ap != nullptr; ap = ap->ai_next) {
             server_sock = socket(ap->ai_family, ap->ai_socktype, ap->ai_protocol);
-            if (server_sock != -1)
-                break;
-        }
-
-        if (ap == NULL) {
-            throw NtpException(2, "Unable to create the socket");
-        }
-
-        struct timeval timeout = {.tv_sec = m_timeout, .tv_usec = 0};
-
-        if (setsockopt(server_sock, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout)) < 0) {
-            throw NtpException(3, "Unable to set RCV timeout");
-        }
-
-        if (setsockopt(server_sock, SOL_SOCKET, SO_SNDTIMEO, (char*)&timeout, sizeof(timeout)) < 0) {
-            throw NtpException(4, "Unable to set SND timeout");
-        }
-
-        if ((status = sendto(server_sock, &packet, sizeof(packet), 0, ap->ai_addr, ap->ai_addrlen)) == -1) {
-            throw NtpException(5, "Unable to send packet");
-        }
-
-        if ((status = recvfrom(server_sock, &packet, sizeof(packet), 0, ap->ai_addr, &addrlen)) == -1) {
-            if (errno == 11 || errno == 35) { // NX: 11, OTH: 35
-                throw NtpException(6, "Connection timeout, retry. (" + std::to_string(m_timeout) + "s)");
-            } else {
-                throw NtpException(7, "Unable to receive packet (" + std::to_string(errno) + ")");
+            if (server_sock == -1) {
+                continue;
             }
+
+            struct timeval tv = {.tv_sec = m_timeout, .tv_usec = 0};
+
+            if (setsockopt(server_sock, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
+                close(server_sock);
+                freeaddrinfo(servinfo);
+                throw NtpException(2, "Unable to set socket receive timeout");
+            }
+
+            if (setsockopt(server_sock, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv)) < 0) {
+                close(server_sock);
+                freeaddrinfo(servinfo);
+                throw NtpException(3, "Unable to set socket send timeout");
+            }
+
+            if (sendto(server_sock, &packet, sizeof(packet), 0, ap->ai_addr, ap->ai_addrlen) == -1) {
+                close(server_sock);
+                continue;
+            }
+
+            struct sockaddr_storage server_addr;
+            socklen_t server_addr_len = sizeof(server_addr);
+            if (recvfrom(server_sock, &packet, sizeof(packet), 0, (struct sockaddr*)&server_addr, &server_addr_len) == -1) {
+                close(server_sock);
+                continue;
+            }
+
+            time_retrieved = true;
+            break;
         }
 
         freeaddrinfo(servinfo);
+        if (!time_retrieved) {
+            throw NtpException(4, "Unable to connect to NTP server");
+        }
+
         close(server_sock);
 
         packet.recv_ts_secs = ntohl(packet.recv_ts_secs);
