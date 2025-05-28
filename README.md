@@ -12,7 +12,7 @@ With this [Tesla](https://github.com/WerWolv/libtesla) plugin, you can now quick
 
 ---
 
-![Preview](https://user-images.githubusercontent.com/389887/191822037-254e038d-a878-4ab1-9e3d-d98f00051974.png)
+![Preview](https://github.com/user-attachments/assets/0218a5e6-92be-44ed-9de1-af400927a493)
 
 ## Features
 
