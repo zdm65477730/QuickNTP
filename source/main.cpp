@@ -14,7 +14,11 @@
 
 TimeServiceType __nx_time_service_type = TimeServiceType_System;
 
-const char* iniFile = "/config/quickntp.ini";
+const char* iniLocations[] = {
+    "/config/quickntp.ini",
+    "/config/quickntp/config.ini",
+    "/switch/.overlays/quickntp.ini",
+};
 const char* iniSection = "Servers";
 
 const char* defaultServerAddress = "pool.ntp.org";
@@ -140,6 +144,15 @@ public:
     NtpGui() {
         char key[INI_BUFFERSIZE];
         char value[INI_BUFFERSIZE];
+
+        const char* iniFile = iniLocations[0];
+        for (const char* loc : iniLocations) {
+            INI_FILETYPE fp;
+            if (ini_openread(loc, &fp)) {
+                iniFile = loc;
+                ini_close(&fp);
+            }
+        }
 
         int idx = 0;
         while (ini_getkey(iniSection, idx++, key, INI_BUFFERSIZE, iniFile) > 0) {

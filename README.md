@@ -22,15 +22,19 @@ With this [Tesla](https://github.com/WerWolv/libtesla) plugin, you can now quick
 
 ### Customize servers
 
-Since v1.5.0, you can create or modify the provided `quickntp.ini` file inside the `config` directory at the root, with the following syntax:
+Since v1.5.0, you can create or modify the provided `quickntp.ini` file, with the following syntax:
 
 ```ini
-# sd:/config/quickntp.ini
 [Servers]
 My_Ntp_Server = ntp.example.com
 ```
 
 Underscores will be replaced by spaces in the UI!
+
+The homebrew will look for the file with the following order priority:
+- /config/quickntp.ini
+- /config/quickntp/config.ini
+- /switch/.overlays/quickntp.ini
 
 **Note**: If the file is missing or invalid, only the `NTP Pool Main` server will be shown.
 

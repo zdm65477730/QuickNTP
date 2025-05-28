@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.5.1] - 2025-05-28
+
+### Changed
+
+- Config file can now be placed in several valid locations
+
 ## [1.5.0] - 2025-05-25
 
 ### Added
@@ -95,6 +101,7 @@ Thanks to [@DarkMatterCore](https://github.com/DarkMatterCore)!
 
 - First release
 
+[1.5.1]: https://github.com/nedex/QuickNTP/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/nedex/QuickNTP/compare/1.2.8-1...1.5.0
 [1.2.8-1]: https://github.com/nedex/QuickNTP/compare/1.2.8...1.2.8-1
 [1.2.8]: https://github.com/nedex/QuickNTP/compare/1.2.7...1.2.8
