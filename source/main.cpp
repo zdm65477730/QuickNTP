@@ -1,5 +1,5 @@
-#ifndef APP_VERSION
-#define APP_VERSION "1.0.0"
+#ifndef VERSION
+#define VERSION "v1.0.0"
 #endif
 
 #define TESLA_INIT_IMPL
@@ -12,12 +12,12 @@
 #include "ntp-client.hpp"
 #include "tesla-ext.hpp"
 
+using namespace tsl;
+
 TimeServiceType __nx_time_service_type = TimeServiceType_System;
 
 const char* iniLocations[] = {
-    "/config/quickntp.ini",
-    "/config/quickntp/config.ini",
-    "/switch/.overlays/quickntp.ini",
+    "/config/" APPTITLE "/config.ini",
 };
 const char* iniSection = "Servers";
 
@@ -52,12 +52,12 @@ private:
             time_t ntpTime = client->getTime();
 
             if (setNetworkSystemClock(ntpTime)) {
-                Message = "Synced with " + srv;
+                Message = "SyncedWithNtpGuiCustomDrawerUnscissoredText"_tr + srv;
             } else {
-                Message = "Unable to set network clock.";
+                Message = "UnableSetNetworkClockNtpGuiNtpExceptionText"_tr;
             }
         } catch (const NtpException& e) {
-            Message = "Error: " + std::string(e.what());
+            Message = "ErrorNtpGuiNtpExceptionText"_tr + std::string(e.what());
         }
 
         delete client;
@@ -69,21 +69,21 @@ private:
 
         Result rs = timeGetCurrentTime(TimeType_UserSystemClock, (u64*)&userTime);
         if (R_FAILED(rs)) {
-            Message = "GetTimeUser " + std::to_string(rs);
+            Message = "GetTimeUserNtpGuiCustomDrawerUnscissoredText"_tr + std::to_string(rs);
             return;
         }
 
-        std::string usr = "User time!";
+        std::string usr = "UserTimeNtpGuiCustomDrawerUnscissoredText"_tr;
         std::string gr8 = "";
         rs = timeGetCurrentTime(TimeType_NetworkSystemClock, (u64*)&netTime);
         if (!R_FAILED(rs) && netTime < userTime) {
-            gr8 = " Great Scott!";
+            gr8 = "GreatScottNtpGuiCustomDrawerUnscissoredText"_tr;
         }
 
         if (setNetworkSystemClock(userTime)) {
             Message = usr.append(gr8);
         } else {
-            Message = "Unable to set network clock.";
+            Message = "UnableSetNetworkClockNtpGuiNtpExceptionText"_tr;
         }
     }
 
@@ -91,7 +91,7 @@ private:
         time_t currentTime;
         Result rs = timeGetCurrentTime(TimeType_NetworkSystemClock, (u64*)&currentTime);
         if (R_FAILED(rs)) {
-            Message = "GetTimeNetwork " + std::to_string(rs);
+            Message = "GetTimeNetworkNtpGuiCustomDrawerUnscissoredText"_tr + std::to_string(rs);
             return;
         }
 
@@ -100,9 +100,9 @@ private:
 
         try {
             time_t ntpTimeOffset = client->getTimeOffset(currentTime);
-            Message = "Offset: " + std::to_string(ntpTimeOffset) + "s";
+            Message = "OffsetNtpGuiCustomDrawerUnscissoredText"_tr + std::to_string(ntpTimeOffset) + "s";
         } catch (const NtpException& e) {
-            Message = "Error: " + std::string(e.what());
+            Message = "ErrorNtpGuiNtpExceptionText"_tr + std::string(e.what());
         }
 
         delete client;
@@ -171,7 +171,7 @@ public:
     }
 
     virtual tsl::elm::Element* createUI() override {
-        auto frame = new tsl::elm::CustomOverlayFrame("QuickNTP", std::string("by NedEX - v") + APP_VERSION);
+        auto frame = new tsl::elm::CustomOverlayFrame("PluginName"_tr, VERSION);
 
         auto list = new tsl::elm::List();
 
@@ -183,7 +183,7 @@ public:
             return false;
         });
 
-        list->addItem(new tsl::elm::CategoryHeader("Pick server   |   \uE0E0  Sync   |   \uE0E3  Offset"));
+        list->addItem(new tsl::elm::CategoryHeader("PickServerOrSyncOrOffsetNtpGuiCategoryHeaderText"_tr));
 
         auto* trackbar = new tsl::elm::NamedStepTrackBarVector("\uE017", serverNames);
         trackbar->setValueChangedListener([this](u8 val) {
@@ -195,25 +195,25 @@ public:
         });
         list->addItem(trackbar);
 
-        auto* syncTimeItem = new tsl::elm::ListItem("Sync time");
+        auto* syncTimeItem = new tsl::elm::ListItem("SyncTimeNtpGuiListItemText"_tr);
         syncTimeItem->setClickListener(syncListener(HidNpadButton_A));
         list->addItem(syncTimeItem);
 
         list->addItem(new tsl::elm::CustomDrawer([](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
-                          renderer->drawString("Syncs the time with the selected server.", false, x + 20, y + 20, 15, renderer->a(tsl::style::color::ColorDescription));
+                          renderer->drawString("SyncTimeDescriptionNtpGuiCustomDrawerText"_tr.c_str(), false, x + 20, y + 20, 15, renderer->a(tsl::style::color::ColorDescription));
                       }),
                       50);
 
-        auto* getOffsetItem = new tsl::elm::ListItem("Get offset");
+        auto* getOffsetItem = new tsl::elm::ListItem("GetOffsetNtpGuiListItemText"_tr);
         getOffsetItem->setClickListener(offsetListener(HidNpadButton_A));
         list->addItem(getOffsetItem);
 
         list->addItem(new tsl::elm::CustomDrawer([](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
-                          renderer->drawString("Gets the seconds offset with the selected server.\n\n\uE016  A value of ± 3 seconds is acceptable.", false, x + 20, y + 20, 15, renderer->a(tsl::style::color::ColorDescription));
+                          renderer->drawString("GetOffsetDescriptionNtpGuiCustomDrawerText"_tr.c_str(), false, x + 20, y + 20, 15, renderer->a(tsl::style::color::ColorDescription));
                       }),
                       70);
 
-        auto* setToInternalItem = new tsl::elm::ListItem("User-set time");
+        auto* setToInternalItem = new tsl::elm::ListItem("UserSetTimeNtpGuiListItemText"_tr);
         setToInternalItem->setClickListener([this](u64 keys) {
             if (keys & HidNpadButton_A) {
                 return operationBlock([&]() {
@@ -225,7 +225,7 @@ public:
         list->addItem(setToInternalItem);
 
         list->addItem(new tsl::elm::CustomDrawer([](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
-                          renderer->drawString("Sets the network time to the user-set time.", false, x + 20, y + 20, 15, renderer->a(tsl::style::color::ColorDescription));
+                          renderer->drawString("UserSetTimeDescriptionNtpGuiCustomDrawerText"_tr.c_str(), false, x + 20, y + 20, 15, renderer->a(tsl::style::color::ColorDescription));
                       }),
                       50);
 
@@ -243,6 +243,37 @@ public:
 class NtpOverlay : public tsl::Overlay {
 public:
     virtual void initServices() override {
+        std::string jsonStr = R"(
+            {
+                "PluginName": "QuickNTP",
+                "UnableGetAddressInfoNtpGuiNtpExceptionText": "Unable to get address info: ",
+                "UnableSetReceiveTimeoutNtpGuiNtpExceptionText": "Unable to set socket receive timeout",
+                "UnableSetSendTimeoutNtpGuiNtpExceptionText": "Unable to set socket send timeout",
+                "UnableConnectToNTPServerNtpGuiNtpExceptionText": "Unable to connect to NTP server",
+                "UnableSetNetworkClockNtpGuiNtpExceptionText": "Unable to set network clock.",
+                "ErrorNtpGuiNtpExceptionText": "Error: ",
+                "SyncedWithNtpGuiCustomDrawerUnscissoredText": "Synced with ",
+                "GetTimeUserNtpGuiCustomDrawerUnscissoredText": "GetTimeUser ",
+                "UserTimeNtpGuiCustomDrawerUnscissoredText": "User time!",
+                "GreatScottNtpGuiCustomDrawerUnscissoredText": " Great Scott!",
+                "GetTimeNetworkNtpGuiCustomDrawerUnscissoredText": "GetTimeNetwork ",
+                "OffsetNtpGuiCustomDrawerUnscissoredText": "Offset: ",
+                "PickServerOrSyncOrOffsetNtpGuiCategoryHeaderText": "Pick server   |   \uE0E0  Sync   |   \uE0E3  Offset",
+                "SyncTimeNtpGuiListItemText": "Sync time",
+                "SyncTimeDescriptionNtpGuiCustomDrawerText": "Syncs the time with the selected server.",
+                "GetOffsetNtpGuiListItemText": "Get offset",
+                "GetOffsetDescriptionNtpGuiCustomDrawerText": "Gets the seconds offset with the selected server.\n\n\uE016  A value of ± 3 seconds is acceptable.",
+                "UserSetTimeNtpGuiListItemText": "User-set time",
+                "UserSetTimeDescriptionNtpGuiCustomDrawerText": "Sets the network time to the user-set time."
+            }
+        )";
+        std::string lanPath = std::string("sdmc:/switch/.overlays/lang/") + APPTITLE + "/";
+        fsdevMountSdmc();
+        tsl::hlp::doWithSmSession([&lanPath, &jsonStr]{
+            tsl::tr::InitTrans(lanPath, jsonStr);
+        });
+        fsdevUnmountDevice("sdmc");
+
         ASSERT_FATAL(socketInitializeDefault());
         ASSERT_FATAL(nifmInitialize(NifmServiceType_User));
         ASSERT_FATAL(timeInitialize());
