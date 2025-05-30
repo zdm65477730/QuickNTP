@@ -175,7 +175,7 @@ $(BUILD):
 	@mkdir -p $(CURDIR)/SdOut/config/$(APP_TITLE)
 	@cp -r $(TARGET).ovl $(CURDIR)/SdOut/switch/.overlays/
 	@cp -r $(CURDIR)/lang/* $(CURDIR)/SdOut/switch/.overlays/lang/$(APP_TITLE)/
-	@cp -r $(CURDIR)/quickntp.ini $(CURDIR)/SdOut/config/$(APP_TITLE)/
+	@cp -r $(CURDIR)/quickntp.ini $(CURDIR)/SdOut/config/$(APP_TITLE)/config.ini
 	@cd $(CURDIR)/SdOut; zip -r -q -9 $(APP_TITLE).zip switch config; cd $(CURDIR)
 
 #---------------------------------------------------------------------------------
