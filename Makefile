@@ -38,9 +38,9 @@ include $(DEVKITPRO)/libnx/switch_rules
 #   NACP building is skipped as well.
 #---------------------------------------------------------------------------------
 APP_TITLE	:=	QuickNTP
-APP_VERSION :=	v1.5.1$(if $(IS_DEV),-dev)
-ifeq ($(RELEASE),)
-	APP_VERSION	:=	$(APP_VERSION)-$(shell git describe --always)
+APP_VERSION :=	v1.5.1
+ifneq ($(strip $(IS_DEV)),)
+	APP_VERSION :=	$(APP_VERSION)-dev
 endif
 
 TARGET		:=	$(APP_TITLE)
