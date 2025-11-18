@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.5.2] - 2025-11-18
+
+### Updated
+
+- libnx @ [v4.10.0](https://github.com/switchbrew/libnx/releases/tag/v4.10.0)
+
 ## [1.5.1] - 2025-05-28
 
 ### Changed
@@ -101,6 +107,7 @@ Thanks to [@DarkMatterCore](https://github.com/DarkMatterCore)!
 
 - First release
 
+[1.5.2]: https://github.com/nedex/QuickNTP/compare/1.5.1...1.5.2
 [1.5.1]: https://github.com/nedex/QuickNTP/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/nedex/QuickNTP/compare/1.2.8-1...1.5.0
 [1.2.8-1]: https://github.com/nedex/QuickNTP/compare/1.2.8...1.2.8-1
