@@ -38,11 +38,10 @@ include $(DEVKITPRO)/libnx/switch_rules
 #   NACP building is skipped as well.
 #---------------------------------------------------------------------------------
 APP_TITLE	:=	QuickNTP
-APP_VERSION :=	v1.5.1
+APP_VERSION	:=	v1.5.2$(if $(IS_DEV),-dev)
 ifeq ($(RELEASE),)
-	APP_VERSION	:=	$(APP_VERSION)-$(shell git describe --always)
+	APP_VERSION	:=	v$(APP_VERSION)-$(shell git describe --always)
 endif
-
 TARGET		:=	$(APP_TITLE)
 BUILD		:=	build
 SOURCES		:=	source libs/minini-nx/source

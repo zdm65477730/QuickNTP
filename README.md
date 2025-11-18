@@ -8,7 +8,7 @@ When using a custom DNS (or a limited connection), it might not be possible to u
 
 With this [Tesla](https://github.com/WerWolv/libtesla) plugin, you can now quickly update your clock using your custom [NTP](https://en.wikipedia.org/wiki/Network_Time_Protocol) servers!
 
-[![QuickNTP badge][version-badge]][changelog] [![GPLv2 License Badge][license-badge]][license]
+[![QuickNTP badge][version-badge]][changelog] [![GPLv2 License Badge][license-badge]][license] [![Build master branch and upload](https://github.com/nedex/QuickNTP/actions/workflows/build-master.yml/badge.svg)](https://github.com/nedex/QuickNTP/actions/workflows/build-master.yml)
 
 ---
 
