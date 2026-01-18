@@ -18,6 +18,8 @@
 // Flags 00|100|011 for li=0, vn=4, mode=3
 #define NTP_FLAGS 0x23
 
+using namespace tsl;
+
 typedef struct {
     uint8_t flags;
     uint8_t stratum;
@@ -66,7 +68,7 @@ public:
         hints = (struct addrinfo){.ai_family = AF_INET, .ai_socktype = SOCK_DGRAM};
 
         if ((status = getaddrinfo(m_server, m_port, &hints, &servinfo)) != 0) {
-            throw NtpException(1, "Unable to get address info (" + std::string(gai_strerror(status)) + ")");
+            throw NtpException(1, "UnableGetAddressInfoNtpGuiNtpExceptionText"_tr + std::string(gai_strerror(status)));
         }
 
         struct addrinfo* ap;
@@ -85,13 +87,13 @@ public:
             if (setsockopt(server_sock, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
                 close(server_sock);
                 freeaddrinfo(servinfo);
-                throw NtpException(2, "Unable to set socket receive timeout");
+                throw NtpException(3, "UnableSetReceiveTimeoutNtpGuiNtpExceptionText"_tr);
             }
 
             if (setsockopt(server_sock, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv)) < 0) {
                 close(server_sock);
                 freeaddrinfo(servinfo);
-                throw NtpException(3, "Unable to set socket send timeout");
+                throw NtpException(4, "UnableSetSendTimeoutNtpGuiNtpExceptionText"_tr);
             }
 
             if (sendto(server_sock, &packet, sizeof(packet), 0, ap->ai_addr, ap->ai_addrlen) == -1) {
@@ -112,9 +114,8 @@ public:
 
         freeaddrinfo(servinfo);
         if (!time_retrieved) {
-            throw NtpException(4, "Unable to connect to NTP server");
+            throw NtpException(4, "UnableConnectToNTPServerNtpGuiNtpExceptionText"_tr);
         }
-
         close(server_sock);
 
         packet.recv_ts_secs = ntohl(packet.recv_ts_secs);

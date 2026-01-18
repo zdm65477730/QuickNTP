@@ -1,6 +1,6 @@
 [submodule "libs/libtesla"]
 	path = libs/libtesla
-	url = https://github.com/WerWolv/libtesla
+	url = https://github.com/zdm65477730/libtesla
 [submodule "libs/minini-nx"]
 	path = libs/minini-nx
 	url = https://github.com/ITotalJustice/minIni-nx.git
